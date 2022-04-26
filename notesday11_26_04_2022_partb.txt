@@ -46,7 +46,7 @@ Column level constraint
         score INTEGER,
         CONSTRAINT result_empid_Subjectid_pk PRIMARY KEY(empid,subejectid)
         );
-       
+----------------------------------------------------------------------------------------------------------------------------------       
         CREATE TABLE employee(
          id VARCHAR2(5),
          name VARCHAR2(20),
@@ -58,7 +58,7 @@ Column level constraint
       columns which are hra and basic. So here the check constraint cannot be applied at column level
       It needs to be applied at table level only.
   -- NOT NULL is a constraint which is applied on COLUMN level only.
--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
 
        Employees are working on multiple projects
  
@@ -124,7 +124,7 @@ the project table. This is happening because we have not related the project tab
   So while inserting the record of E0002 in employee table, we will get error because it will be
   checked whether we have P0005 in the project table. As it is not there , it wont accept the record.
 
----------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
   CREATE TABLE employeedetails(
          empid VARCHAR2(5) PRIMARY KEY,
          empname VARCHAR2(20) NOT NULL,
@@ -174,7 +174,7 @@ CREATE TABLE backup(
 
 INSERT INTO backup(empid,empname) SELECT empid,empname from employeedetails WHERE desig='Mgr';
 
---------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------
 
  CREATE TABLE employeedetails(
          empid VARCHAR2(5) PRIMARY KEY,
@@ -194,10 +194,11 @@ INSERT INTO employeedetails(empid,desig,dept,basic) VALUES('E0001','Mgr','Sales'
 inserting the data, we inserted a string.
 -------------------
 -- String data are case sensitive in oracle
- INSERT INTO employeedetails VALUES('E0001','eename='rajesh';
+INSERT INTO employeedetails VALUES('E0001','Rajesh','Manager','Sales',30000);
+ SELECT * FROM employeedetails WHERE name='rajesh';
   -- It wont show any of the rows as we are writing r in lowercase but in the table while storing 
   we stored R in uppercase for rajesh.  
--------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
 We need to design an application for a shop. We need to store the customer details like firstname,middlename,lastname,mobilenumber,dob,city
 
    firstname,lastname,mobilenumber,dob cannot be null. 
@@ -213,7 +214,7 @@ quantity purchased.
 
      date of purchase cannot be null and quantity purchased cannot be 0 or less than 0.
 
---------------------------------------------------------------------------------------------------------
+
 CREATE TABLE customer(
    custid,
    firstname,
@@ -236,7 +237,7 @@ itemid
 dateofpur
 qp
 )
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------
 
 CREATE TABLE employeedetails(
          empid VARCHAR2(5) PRIMARY KEY,
@@ -255,7 +256,7 @@ CREATE TABLE employeedetails(
    INSERT INTO employeedetails VALUES('E0005','Mohan','Mgr','Sales',29000,null);
    INSERT INTO employeedetails VALUES('E0006','Surender','VP','Mkt',20000,'21-mar-1999');
 
---------------------------------------------------------------------------------------------
+
 Q Why we need to use where clause?
 A To restrict the number of records based on some condition
 
@@ -334,7 +335,7 @@ In CHAR , if size is more than the string stored, the extra trailing locations a
 In VARCHAR2 if the size is more than the string stored , the extra trailing locations are not filled with space.
 So while providing the where clause for an attribute which is of type char , iff  the compared value
 is having smaller size as that of declaration we may compare the data with or without trailing space.
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------
 CREATE TABLE employeedetails(
          empid VARCHAR2(5) PRIMARY KEY,
          empname VARCHAR2(20) NOT NULL,
@@ -407,7 +408,7 @@ DELETE FROM employeedetails WHERE desig='VP';
 
 Q Delete all the records from employeedetails.
 DELETE FROM employeedetails;
------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
 CREATE TABLE employeedetails(
          empid VARCHAR2(5) PRIMARY KEY,
          empname VARCHAR2(20) NOT NULL,
@@ -425,7 +426,7 @@ CREATE TABLE employeedetails(
    INSERT INTO employeedetails VALUES('E0005','Mohan','Mgr','Sales',29000,null);
    INSERT INTO employeedetails VALUES('E0006','Surender','VP','Mkt',20000,'21-mar-1999');
 
----------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------
 Example of single row function
        SELECT upper(empname) FROM employeedetails;
        SELECT empid,upper(empname) NAME,desig,dept,basic FROM employeedetails;
@@ -435,7 +436,7 @@ Example of multiple rows function
 
 SELECT City, LENGTH(City) "LENGTH",  LOWER(City) "LOWERCASE", UPPER(City) "UPPERCASE" FROM Weather
 WHERE LENGTH(city)=6;
----------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 SELECT City, Country, CONCAT(City, Country) "CONCAT", City || Country "ConcatByOperator", CONCAT(CONCAT(City, ', '), Country) "NestedConcat" FROM Weather;
 ----------------------------------------------------------------------
 SELECT City, Country, CONCAT(City, Country) "CONCAT" FROM Weather;

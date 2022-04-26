@@ -1,0 +1,33 @@
+create table empl as select id,ename,doj,salary,bonus,dept,designation from employee where dept='ETA';
+
+insert into empl values (6,'Ram Varma','01-Apr-20',58000,null,'ICP','Mgr');
+
+insert into empl (id,doj,ename,salary,dept,designation) values (7,'23-Mar-21','Smruti Goyal',70000,'ETA','Eng');
+
+insert into empl (id,ename,doj,salary,bonus,dept,designation)  select id,ename,doj,salary,bonus,dept,designation from employee where dept='ICP'
+
+update empl set designation='SSE' where id=2;
+
+update empl set bonus=2000 where dept='ICP';
+
+select id,ename,salary from empl where dept='ICP';
+
+select id,ename,salary from empl where salary>=40000 and salary<75000
+
+select id,ename,salary from empl where salary>=40000 and salary<75000 order by id desc
+
+select id,ename,salary from empl where salary between 40000 and 75000 order by id desc
+
+select * from empl where  designation='SSE' or designation='SE'
+
+select * from empl where  designation in ('SSE' ,'Mgr')
+
+select * from empl where  ename not like 'E%'
+
+select * from empl where  doj in ( '01-Feb-14', '01-Mar-21','01-Apr-20')
+
+select id,ename,salary,bonus,salary+bonus from empl;
+
+select id,ename,doj,(sysdate-doj)/365 from empl
+update empl set bonus=2500
+

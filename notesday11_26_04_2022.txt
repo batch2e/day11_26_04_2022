@@ -36,89 +36,6 @@ but the combination of empid and examid can help us in getting the
 score. So composite primary key is primary key where a single
 column is not enough to identify a record. We need participation of
 multiple columns ( two or more ) to indentify a record or a tupple or a row.
-------------------------------------------------------------------------------------------------------------------------------
-
- The students are appearing for exams. We have exam on Maths,English and Science. We need to keep a track of student's roll,name
-and marks of 3 subjects. 
-
-roll
-name
-scoreofsubject1
-scoreofsubject2
-scoreofsubject3
- 
-roll name subjectname marks
-1    Ram     English  90
-1    Ram     Maths    80
-2    Ashok   English  34
-2    Ashok   English  67
-3    Rahul   English  45
-
-Observations:
-* Everything is being stored in a single table.
-* We can see redundancy in maintaining the data.
-* If we go updating,deleting the data we have challenges. Example if we want to update the name Ram as Ramya , in multiple
-  places we have to update the data. Same is with deleting the data. So if we have to delete the record of Ram , multple
-  records related to Ram needs to be deleted.
-
-Conclusion:
-We cannot keep all the datas in a single table. We have to plan for multiple tables. 
-
-
-student 
-roll    name
-1       Ram
-2       Ashok
-3       Rahul
-4       Ram
-
-/* constraint name within a database should be unique just as table name which should be unique in a database */
-CREATE TABLE student(
-    roll INTEGER CONSTRAINT student_roll_pk PRIMARY KEY,
-    name VARCHAR2(20)
-  );
-
-INSERT INTO student VALUES(1,'Ram');
-INSERT INTO student VALUES(2,'Ashok');
-INSERT INTO student VALUES(3,'Rahul');
-INSERT INTO student VALUES(4,'Ram');
-
-subject 
-subjectid     subjectname      max_marks
-S001          English          100
-S002          Maths            100
-S003          Science          100
-
-CREATE TABLE subject(
-    subjectid VARCHAR2(5) CONSTRAINT subject_subjectid_pk PRIMARY KEY,
-    subjectname VARCHAR2(20),
-    max_marks INTEGER
-  )
-    
-INSERT INTO subject VALUES('S001','English',100);
-INSERT INTO subject VALUES('S002','Maths',100);
-INSERT INTO subject VALUES('S003','Science',100);
-
-studentresult
-rollno(FK)    subjectid(FK)       score
-1           S001                78
-2           S001                50
-1           S002                90
-2           S002                100
-1           S003                56
-
-CREATE TABLE studentresult(
-     rollno INTEGER CONSTRAINT studentresult_roll_fk REFERENCES student(roll),
-     subjectid VARCHAR2(5) CONSTRAINT studentresult_subject_id REFERENCES subject(subjectid),
-     score INTEGER );
-
-INSERT INTO studentresult VALUES(1,'S001',78);
-INSERT INTO studentresult VALUES(10,'S001',90); /* We wont able to insert this record as we dont have roll number 10 in the 
-student table */
-INSERT INTO studentresult VALUES(1,'S006',90); /* we wont able to insert this record as we dont have the subjectid S006 in the 
-subject table */
----------------------------------------------------------------------------------------------------------------------------------
-
 
 ------------------------------------------------------------------------------------------
 Employees and their managers
@@ -132,8 +49,6 @@ Employees and their managers
 empid is a primary key and manager id is a foreign key and is linked with the primary key of 
 the same table.
 
-H e l l o
-- - - - - - - - - -
 
 
   empid name basic
@@ -284,28 +199,7 @@ Constraints can be applied in two ways:
   )
 
 -----------------------------------------------------------------------------------------------
-TABLE LEVEL CONSTRAINTS ARE APPLIED WHEN MULTIPLE COLUMNS ARE INVLOVED IN APPLYING A CONSTRAINT. We have employees and 
-employees are asked for the assessments in two subjects.
-
-employeemaster
-empid  empname
-E0001  Suresh
-E0002  Geeta
-
-subjectmaster
-subjectid subjectname marks_marks
-S0001     Java        100
-S0002     DBMS        100
-
-
-/* In the result table we want to create primary key where we have empid,subjectid and marks_score */
-result 
-empid    subjectid       marks_score
-E0001    S0001           90
-E0001    S0002           100
-E0002    S0001           78
-
-
+TABLE LEVEL CONSTRAINTS ARE APPLIED WHEN MULTIPLE COLUMNS ARE INVLOVED IN APPLYING A CONSTRAINT.
 
 EXAMPLE we need define a composite primary key. Composite primary key cannot be defined at column level. It is always defined at table level.
  
@@ -325,7 +219,7 @@ CREATE TABLE result (
     marks INTEGER,
     CONSTRAINT result_empid_subjectid_pk PRIMARY KEY(empid,subjectid)
    )
-/*  When we have composite primary key, it has to defined at the table level */
+
 --------------------------------------------------------------------------------------------------
 ''===> empty string
 ' '====> string with a space
@@ -423,7 +317,7 @@ CREATE TABLE Student (
 If two columns are involved for applying a constraint , it will be always at table level.
 But if only a single column is used for a constraint , it can be applied in both the ways that is
 column and table level. Not null is a constraint that can be applied at column level only.
--------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
 
 CREATE TABLE department(
    deptid VARCHAR(5) PRIMARY KEY,
