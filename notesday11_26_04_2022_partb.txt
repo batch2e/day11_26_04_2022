@@ -608,4 +608,5 @@ Create a table where default value for the customer's city is Delhi.
 --------------------------------------------------------------------------------------------------- 
   
 
-
+INSERT into employee VALUES('E0001','Akash','12-Jan-2010');
+INSERT into employee VALUES('E0002','Akash',to_date('12-01-2010','dd-mm-yyyy'));
