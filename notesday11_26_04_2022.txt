@@ -1,0 +1,468 @@
+* SQL statements=====> The language which is used to instruct the DBMS to interact with Database.
+   
+ 
+* DBMS=========> Database Management System managing the data in the form of adding, updating and
+                 deleting the data
+* Database ====> Holding the data/Container for the data
+------------------------------------------------------------------------------------------
+Q What Database we are going to use?
+A Oracle
+---------------------------------------------------------------------------------------------
+Q Can you name same popular databases(RDBMS)?
+A Oracle, SQL Server, MYSQL, Sybase, DB2
+-------------------------------------------------------------------------------------------------
+The trainees have to give two assessments so need to store the data in relevance to that.
+   employee
+  empid  empname address
+  E0001  Abhi    Kolkata
+  E0002  Rahul   Delhi
+
+  exam
+  examid  desc  
+  J0001   Java
+  D0001   DBMS
+
+   result
+   empid  examid  score
+   E0001   J0001   80 
+   E0002   J0001   90
+   E0001   D0001   56
+   E0002   D0001   78
+
+ Composite primary key =====> empid and examid because 
+in the above case we cannot get the score if we only say the empid 
+and similarly we cannot get the score if we just say the examid 
+but the combination of empid and examid can help us in getting the
+score. So composite primary key is primary key where a single
+column is not enough to identify a record. We need participation of
+multiple columns ( two or more ) to indentify a record or a tupple or a row.
+------------------------------------------------------------------------------------------------------------------------------
+
+ The students are appearing for exams. We have exam on Maths,English and Science. We need to keep a track of student's roll,name
+and marks of 3 subjects. 
+
+roll
+name
+scoreofsubject1
+scoreofsubject2
+scoreofsubject3
+ 
+roll name subjectname marks
+1    Ram     English  90
+1    Ram     Maths    80
+2    Ashok   English  34
+2    Ashok   English  67
+3    Rahul   English  45
+
+Observations:
+* Everything is being stored in a single table.
+* We can see redundancy in maintaining the data.
+* If we go updating,deleting the data we have challenges. Example if we want to update the name Ram as Ramya , in multiple
+  places we have to update the data. Same is with deleting the data. So if we have to delete the record of Ram , multple
+  records related to Ram needs to be deleted.
+
+Conclusion:
+We cannot keep all the datas in a single table. We have to plan for multiple tables. 
+
+
+student 
+roll    name
+1       Ram
+2       Ashok
+3       Rahul
+4       Ram
+
+/* constraint name within a database should be unique just as table name which should be unique in a database */
+CREATE TABLE student(
+    roll INTEGER CONSTRAINT student_roll_pk PRIMARY KEY,
+    name VARCHAR2(20)
+  );
+
+INSERT INTO student VALUES(1,'Ram');
+INSERT INTO student VALUES(2,'Ashok');
+INSERT INTO student VALUES(3,'Rahul');
+INSERT INTO student VALUES(4,'Ram');
+
+subject 
+subjectid     subjectname      max_marks
+S001          English          100
+S002          Maths            100
+S003          Science          100
+
+CREATE TABLE subject(
+    subjectid VARCHAR2(5) CONSTRAINT subject_subjectid_pk PRIMARY KEY,
+    subjectname VARCHAR2(20),
+    max_marks INTEGER
+  )
+    
+INSERT INTO subject VALUES('S001','English',100);
+INSERT INTO subject VALUES('S002','Maths',100);
+INSERT INTO subject VALUES('S003','Science',100);
+
+studentresult
+rollno(FK)    subjectid(FK)       score
+1           S001                78
+2           S001                50
+1           S002                90
+2           S002                100
+1           S003                56
+
+CREATE TABLE studentresult(
+     rollno INTEGER CONSTRAINT studentresult_roll_fk REFERENCES student(roll),
+     subjectid VARCHAR2(5) CONSTRAINT studentresult_subject_id REFERENCES subject(subjectid),
+     score INTEGER );
+
+INSERT INTO studentresult VALUES(1,'S001',78);
+INSERT INTO studentresult VALUES(10,'S001',90); /* We wont able to insert this record as we dont have roll number 10 in the 
+student table */
+INSERT INTO studentresult VALUES(1,'S006',90); /* we wont able to insert this record as we dont have the subjectid S006 in the 
+subject table */
+---------------------------------------------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------
+Employees and their managers
+ 
+  empid empname dept mgrid
+  E0001 Rakesh  Sales NULL
+  E0002 Sourish Sales E0001
+  E0003 Nitin   Sales E0001
+  E0004 Radha   Sales E0002
+-------------------------------------------------------------
+empid is a primary key and manager id is a foreign key and is linked with the primary key of 
+the same table.
+
+H e l l o
+- - - - - - - - - -
+
+
+  empid name basic
+  E001  Rahul NULL
+
+SELECT empid,name,basic+1000
+FROM employee;
+
+SELECT empid,name
+FROM employee
+WHERE basic IS NULL;
+
+We never write
+
+SELECT empid,name
+FROM employee
+WHERE basic=NULL;
+
+
+
+CREATE TABLE trial ( code VARCHAR2(5) PRIMARY KEY, name VARCHAR2(20))
+
+INSERT INTO trial VALUES('E0001','Ram')
+
+SELECT * FROM trial
+
+SQL is not case sensitive. But we try to write the keywords in uppercase.
+
+-------------------------------------------------------------------------------------------------
+/*                                                 
+    Creating a table
+*/
+
+  CREATE TABLE student(
+   roll INTEGER,
+   name VARCHAR2(20),
+   dob DATE)
+
+/*
+   Drop table    
+
+*/
+     DROP TABLE student 
+
+/*
+     Will show a list of all the tables in the database
+  
+*/
+
+SELECT * FROM TAB
+/*
+   To insert a record in the table
+   INSERT INTO tablename VALUES(data1,data2,data3....dataN)
+*/
+  INSERT INTO student VALUES(1,'Ram','12-Jan-2010')
+  INSERT INTO student VALUES(1,'Ram','12-Jan-2010')  
+/* WE are able to store the same roll number because roll number is not declared as primary key. */
+  INSERT INTO student(roll,name,dob) VALUES(1,'Ram','12-Jan-2010');
+  INSERT INTO student(dob,name,roll) VALUES('12-Jan-2010','Ram',2);
+/* We want to enter name as null */
+  INSERT INTO student VALUES(1,NULL,'13-mar-1991');
+  INSERT INTO student(roll,dob) VALUES (1,'15-Jul-1996');
+
+/*  To see the content of a table     
+  */
+-- To see all the columns from a table
+SELECT * FROM tablename
+SELECT * FROM student
+-- We want to see the selective columns
+SELECT columnname1,columnnameN FROM tablename
+SELECT roll,name FROM student
+-- We want to see all columns but selective rows
+SELECT * FROM tablename <where clause>
+SELECT * FROM student WHERE name='Ram'
+-- We want to see selective columns and selective rows
+SELECT columnname1,columnameN FROM tablename <where clause>
+SELECT roll,dob FROM student WHERE name='Ram'
+-------------------------------------------------------------------------------------------------
+/* Alternate command to drop a table */
+
+DROP TABLE <Table name> CASCADE CONSTRAINTS;
+
+--------------------------------------------------------------
+
+CREATE TABLE Student ( 
+    Studentid INTEGER CONSTRAINT stud_sid_pk PRIMARY KEY,
+    FName VARCHAR2(10), 
+    ContactNo NUMBER (10));
+
+INSERT INTO student VALUES(1,'Sam',9876543210);
+INSERT INTO student VALUES(1,'Sam',9876543210);
+
+ORA-00001: unique constraint (WAL352358.STUD_SID_PK) violated
+[Note the above error is because we have the same studentid for 2 records)
+
+INSERT INTO student VALUES(2,'James',8876443210);
+-- We cannot insert a null value in the primary key column
+INSERT INTO student VALUES(null,'James',8876443210);
+ORA-01400: cannot insert NULL into ("WAL352358"."STUDENT"."STUDENTID")
+
+    CREATE TABLE Marks (
+    CourseId INTEGER, 
+    StudentId INTEGER CONSTRAINT marks_sid_fk REFERENCES Student (StudentId), 
+    MarksScored DECIMAL (5,2));
+
+INSERT INTO marks VALUES(11,1,70);
+INSERT INTO marks VALUES(22,1,90);
+
+INSERT INTO marks VALUES(33,4,90);
+ORA-02291: integrity constraint (WAL352358.MARKS_SID_FK) violated - parent key not found
+[The above error is because the student id 4 is not available in the parent table student]
+
+---------------
+
+DROP TABLE student
+ORA-02449: unique/primary keys in table referenced by foreign keys
+[ We are getting the above error because a student id 1 is present in the child table marks.
+So if we have a reference of any record in the child table, in that case we cannot drop the
+master table with DROP table command. In that case we have to write the command as]
+DROP TABLE <tablename> CASCADE CONSTRAINTS
+DROP TABLE student CASCADE CONSTRAINTS
+----------------------------------------------------------------------------------------------------
+Constraints can be applied in two ways:
+1) Column level constraint 
+
+   CREATE TABLE book(
+    bookid VARCHAR2(5) CONSTRAINT book_bookid_pk PRIMARY KEY,
+    title VARCHAR2(20),
+    price NUMBER(5,2)
+  )
+ 
+
+2) Table level constraint
+
+ CREATE TABLE book(
+    bookid VARCHAR2(5), 
+    title VARCHAR2(20),
+    price NUMBER(5,2),
+    CONSTRAINT book_bookid_pk PRIMARY KEY(bookid)
+  )
+
+ CREATE TABLE book(
+    bookid VARCHAR2(5), 
+    title VARCHAR2(20),
+    CONSTRAINT book_bookid_pk PRIMARY KEY(bookid),
+    price NUMBER(5,2)
+    
+  )
+
+-----------------------------------------------------------------------------------------------
+TABLE LEVEL CONSTRAINTS ARE APPLIED WHEN MULTIPLE COLUMNS ARE INVLOVED IN APPLYING A CONSTRAINT. We have employees and 
+employees are asked for the assessments in two subjects.
+
+employeemaster
+empid  empname
+E0001  Suresh
+E0002  Geeta
+
+subjectmaster
+subjectid subjectname marks_marks
+S0001     Java        100
+S0002     DBMS        100
+
+
+/* In the result table we want to create primary key where we have empid,subjectid and marks_score */
+result 
+empid    subjectid       marks_score
+E0001    S0001           90
+E0001    S0002           100
+E0002    S0001           78
+
+
+
+EXAMPLE we need define a composite primary key. Composite primary key cannot be defined at column level. It is always defined at table level.
+ 
+   empid and subjectid together will form a composite primary key.
+
+  So if we write something as 
+
+  CREATE TABLE result (
+    empid VARCHAR2(5) CONSTRAINT result_empid_pk PRIMARY KEY,
+    subjectid VARCHAR2(5) CONSTRAINT result_subjectid_pk PRIMARY KEY,
+    marks INTEGER)
+ [ ORA-02260: table can have only one primary key ]
+
+CREATE TABLE result (
+    empid VARCHAR2(5),
+    subjectid VARCHAR2(5), 
+    marks INTEGER,
+    CONSTRAINT result_empid_subjectid_pk PRIMARY KEY(empid,subjectid)
+   )
+/*  When we have composite primary key, it has to defined at the table level */
+--------------------------------------------------------------------------------------------------
+''===> empty string
+' '====> string with a space
+Primary key is by default NOT NULL. You dont have to mention explicitly as not null
+  CREATE TABLE employeedetails(
+   empid VARCHAR2(5) CONSTRAINT employee_Details_pk PRIMARY KEY,
+   empname VARCHAR2(20) CONSTRAINT employee_details_not_null NOT NULL,
+   basic INTEGER CONSTRAINT employee_details_bsc_not_null NOT NULL);
+
+   INSERT INTO employeedetails VALUES('E0001',null,12000);
+   INSERT INTO employeedetails VALUES('E0002',null,null);
+   INSERT INTO employeedetails VALUES('E0002','Ravi',null);
+   INSERT INTO employeedetails VALUES('E0001','Ravi',15000); --accepted
+   INSERT INTO employeedetails VALUES(null,'Ravi',15000);
+   
+---------------------------------------------------------------------------------
+-- We can write as below without giving the constraint name
+  CREATE TABLE employeedetails(
+   empid VARCHAR2(5) PRIMARY KEY,
+   empname VARCHAR2(20)  NOT NULL,
+   basic INTEGER CONSTRAINT  NOT NULL);
+----------------------------------------------------------------------------------------------------
+Not null is a constraint which cannot be applied at table level. It  is
+always applied at a column level.
+
+ CREATE TABLE employeedetails(
+   empid VARCHAR2(5) CONSTRAINT employee_Details_pk PRIMARY KEY,
+   empname VARCHAR2(20),
+   basic INTEGER,
+   CONSTRAINT employee_details_empname NOT NULL(empname));
+-------------------------------------------------------------------------------------------------
+
+ CREATE TABLE employeedetails(
+   empid VARCHAR2(5) CONSTRAINT employee_Details_pk PRIMARY KEY,
+   empname VARCHAR2(20),
+   basic INTEGER,
+   city VARCHAR2(20) default 'Delhi');
+
+ INSERT INTO employeedetails VALUES('E0001','Rahul',23000,'Chennai');
+ INSERT INTO employeedetails VALUES('E0002','Avinash',21000,null);
+ INSERT INTO employeedetails(empid,empname,basic) VALUES('E0003','Rita',21000); -- default value Delhi will be inserted
+------------------------------------------
+PRIMARY KEY CANNOT HAVE A NULL VALUE AND PRIMARY KEY CANNOT CONTAIN duplicate values.
+-------------------------------------------------------------------------------------------------
+CHECK CONSTRAINT
+
+CREATE TABLE Student ( 
+    StudentId INTEGER, 
+    FName VARCHAR2(10), 
+    Gender CHAR(1) CONSTRAINT Stud_gender_ck1 CHECK(Gender IN('M', 'F'))); 
+
+
+  INSERT INTO Student VALUES(1,'Suresh','M');
+  INSERT INTO Student VALUES(2,'Sunita','F');
+  INSERT INTO STudent VALUES(3,'Ahmed','A'); -- ORA-02290: check constraint (WAL352358.STUD_GENDER_CK1) violated
+A is not allowed because with the check constraint for gender we have mentione M and F in the list.
+So those two values are only permissible for the gender column.
+
+CREATE TABLE EmployeeMaster ( 
+    empid INTEGER, 
+    name VARCHAR2(10),
+    dob date,
+    doj date, 
+    CONSTRAINT Employee_dob_doj CHECK(dob<doj));
+
+  INSERT INTO employeemaster VALUES(1,'Soham','12-jan-1980','20-feb-2020');
+  INSERT INTO employeemaster VALUES(2,'Rehan','12-jan-2021','20-feb-2020');
+ORA-02290: check constraint (WAL352358.EMPLOYEE_DOB_DOJ) violated. In the second record dob is
+after doj. 
+------------------------------------------------------------------------------------------------
+Unique key can contain NULL value/values.
+We can have multiple unique columns in a table but primary key can be one.
+-------------------------------------------------------------------------------------- 
+-- Column level
+
+CREATE TABLE Student ( 
+    StudentId INTEGER, 
+    FName VARCHAR2(10), 
+    ContactNo NUMBER(10) CONSTRAINT Stud_cno_uk UNIQUE);
+
+-- Table level 
+
+CREATE TABLE Student ( 
+    StudentId INTEGER, 
+    FName VARCHAR2(10), 
+    ContactNo NUMBER(10),
+    CONSTRAINT Stud_cno_uk UNIQUE(ContactNo));
+
+
+   INSERT INTO Student VALUES(1,'Akash',7890123450);
+   INSERT INTO Student VALUES(2,'Deepak',7890123450);
+   INSERT INTO Student VALUES(3,'Rehan',null);
+   INSERT INTO Student VALUES(4,'Sirish',null);
+
+If two columns are involved for applying a constraint , it will be always at table level.
+But if only a single column is used for a constraint , it can be applied in both the ways that is
+column and table level. Not null is a constraint that can be applied at column level only.
+-------------------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE department(
+   deptid VARCHAR(5) PRIMARY KEY,
+   des VARCHAR(20)
+);
+
+ INSERT INTO department VALUES('D0001','Mkt');
+ INSERT INTO department VALUES('D0002','Sales');
+ 
+
+CREATE TABLE employeedetails(
+        id VARCHAR(5) PRIMARY KEY,
+        name VARCHAR(20),
+        deptid VARCHAR(20));
+
+INSERT INTO employeedetails VALUES('E0001','Ram','D0001');
+INSERT INTO employeedetails VALUES('E0002','Joseph','D0003');
+-- I was expecting that the second insert won't happen because D0003 is not available in the department table but it is inserted
+
+
+
+CREATE TABLE department(
+   deptid VARCHAR2(5) PRIMARY KEY,
+   des VARCHAR2(20)
+);
+
+ INSERT INTO department VALUES('D0001','Mkt');
+ INSERT INTO department VALUES('D0002','Sales');
+ 
+
+CREATE TABLE employeedetails(
+        id VARCHAR2(5) PRIMARY KEY,
+        name VARCHAR2(20),
+        deptid VARCHAR2(20) CONSTRAINT employeedetails_deptid_fk REFERENCES department(deptid));
+
+INSERT INTO employeedetails VALUES('E0001','Ram','D0001');
+INSERT INTO employeedetails VALUES('E0002','Joseph','D0003');
+ORA-02291: integrity constraint (WAL352358.EMPLOYEEDETAILS_DEPTID_FK) violated - parent key not found
+-- The second record is not inserted as D0003 is not present in the parent table department.
+So the foreign key is ensuring that only those ids can be inserted in the child table which is
+present in the master table. 
+---------------------------------------------------------------------------------------------

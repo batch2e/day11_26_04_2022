@@ -1,0 +1,610 @@
+Column level constraint
+       Applied when column is mentioned or declared.Column level constraint
+       is not mandatory to write when we are writing the constraint and
+       constraint is just dependent on one column
+         CREATE TABLE project(
+           projectid VARCHAR2(5) CONSTRAINT project_id_pk PRIMARY KEY,
+           description VARCHAR(20) NOT NULL
+       );
+
+       CREATE TABLE employee(
+         empid VARCHAR2(5) PRIMARY KEY,
+         empname VARCHAR2(20) NOT NULL,
+         desig VARCHAR2(20) CHECK (desig IN('Mgr','AsstMgr','VP')),
+         dept VARCHAR2(20) CHECK (dept IN('Sales','Mkt','HR)),
+         basic INTEGER check (basic>=10000 AND basic<=30000)
+         )
+
+
+  -- In the above SQL statement we have applied column level 
+     constraint.   
+   
+
+   Table level constraint
+     When the constraint is applied after the declaration of the column
+     CREATE TABLE project(
+           projectid VARCHAR2(5),
+           description VARCHAR(20) NOT NULL,
+           CONSTRAINT project_id_pk PRIMARY KEY(projectid)
+         );
+
+     Table level constraint becomes mandatory when multiple columns are involved in applying a 
+     constraint example , composite primary key. Composite primary key cannot be applied at a 
+     column level. It will be always at table level.
+
+     CREATE TABLE result(
+        empid VARCHAR2(5) PRIMARY KEY,
+        subjectid VARCHAR2(5) PRIMARY KEY,
+        score INTEGER);
+
+   -- So in the above SQL statement , it will be considered as two primary keys and which is not
+      allowed 
+    
+       CREATE TABLE result(
+        empid VARCHAR2(5),
+        subjectid VARCHAR2(5),
+        score INTEGER,
+        CONSTRAINT result_empid_Subjectid_pk PRIMARY KEY(empid,subejectid)
+        );
+       
+        CREATE TABLE employee(
+         id VARCHAR2(5),
+         name VARCHAR2(20),
+         basic INTEGER,
+         hra INTEGER,
+         CONSTRAINT employee_basic_hra_chk CHECK (hra<basic)
+         )
+   -- In the above SQL statement we are applying check constraint which is involving two attributes or
+      columns which are hra and basic. So here the check constraint cannot be applied at column level
+      It needs to be applied at table level only.
+  -- NOT NULL is a constraint which is applied on COLUMN level only.
+-------------------------------------------------------------------------------------
+
+       Employees are working on multiple projects
+ 
+      Project
+      projid  description  startdate  enddate
+
+     
+      Employee
+      empid   name  projid
+
+      
+      CREATE TABLE project (
+        projid INTEGER PRIMARY KEY,
+        description VARCHAR2(20) NOT NULL,
+        startdate DATE NOT NULL,
+        enddate   DATE
+       );
+ 
+       CREATE TABLE employee(
+        empid INTEGER PRIMARY KEY,
+        name VARCHAR2(20) NOT NULL,
+        projid INTEGER);
+
+  PROJECT
+  PROJID    DESCRIPTION  STARTDATE      ENDDATE
+  P0001        Banking       12-Jan-1990   NULL
+  P0002        Insurance     15-Feb-2020   NULL
+
+  EMPLOYEE 
+  EMPID    NAME   PROJID    
+  E0001    Ramesh  P0001
+  E0002    Rohit   P0005
+
+In the above case P0005 is accepted in the employee table though we dont have the P0005 projid in
+the project table. This is happening because we have not related the project table with the employee table.
+
+
+     
+      CREATE TABLE project (
+        projid INTEGER PRIMARY KEY,
+        description VARCHAR2(20) NOT NULL,
+        startdate DATE NOT NULL,
+        enddate   DATE
+       );
+ 
+       CREATE TABLE employee(
+        empid INTEGER PRIMARY KEY,
+        name VARCHAR2(20) NOT NULL,
+        projid INTEGER CONSTRAINT employee_projid_fk REFERENCES project(projid));
+
+-- The projid in employee table is a foreign key and projid in project table is a primary key.
+   So with the help of foreign key , we are setting a relationship between project table and
+   the employee table.
+ PROJECT
+  PROJID    DESCRIPTION  STARTDATE      ENDDATE
+  P0001        Banking       12-Jan-1990   NULL
+  P0002        Insurance     15-Feb-2020   NULL
+
+  EMPLOYEE 
+  EMPID    NAME   PROJID    
+  E0001    Ramesh  P0001
+  E0002    Rohit   P0005
+  So while inserting the record of E0002 in employee table, we will get error because it will be
+  checked whether we have P0005 in the project table. As it is not there , it wont accept the record.
+
+---------------------------------------------------------------------------------------------
+  CREATE TABLE employeedetails(
+         empid VARCHAR2(5) PRIMARY KEY,
+         empname VARCHAR2(20) NOT NULL,
+         desig VARCHAR2(20) CHECK (desig IN('Mgr','AsstMgr','VP')),
+         dept VARCHAR2(20) CHECK (dept IN('Sales','Mkt','HR')),
+         basic INTEGER check (basic>=10000 AND basic<=30000)
+         );
+
+
+   INSERT INTO employeedetails VALUES('E0001','Rajesh','Mgr','Sales',30000);
+   INSERT INTO employeedetails VALUES('E0002','Raj','Mgr','Sales',29000);
+   INSERT INTO employeedetails VALUES('E0003','Rohit','AsstMgr','Sales',20000);
+
+CREATE TABLE backup(
+         empid VARCHAR2(5) PRIMARY KEY,
+         empname VARCHAR2(20) NOT NULL,
+         desig VARCHAR2(20) CHECK (desig IN('Mgr','AsstMgr','VP')),
+         dept VARCHAR2(20) CHECK (dept IN('Sales','Mkt','HR')),
+         basic INTEGER check (basic>=10000 AND basic<=30000)
+          );
+
+INSERT INTO backup SELECT * FROM employeedetails WHERE desig='Mgr';
+-- The above statement will store the records of managers from employeedetails table to the backup table.
+INSERT INTO backup SELECT * FROM employeedetails; 
+-- The above statement will store all the records  from employeedetails table to the backup table.
+
+CREATE TABLE backup(
+         empid VARCHAR2(5) PRIMARY KEY,
+         empname VARCHAR2(20) NOT NULL,
+         dept VARCHAR2(20) CHECK (dept IN('Sales','Mkt','HR')),
+         basic INTEGER check (basic>=10000 AND basic<=30000)
+
+
+          );
+
+INSERT INTO backup SELECT empid,empname,dept,basic FROM employeedetails WHERE desig='Mgr';
+
+
+
+CREATE TABLE backup(
+         empid VARCHAR2(5) PRIMARY KEY,
+         empname VARCHAR2(20) NOT NULL,
+         desig VARCHAR2(20) CHECK (desig IN('Mgr','AsstMgr','VP')),
+         dept VARCHAR2(20) CHECK (dept IN('Sales','Mkt','HR')),
+         basic INTEGER check (basic>=10000 AND basic<=30000)
+          );
+
+INSERT INTO backup(empid,empname) SELECT empid,empname from employeedetails WHERE desig='Mgr';
+
+--------------------------------------------------------------------------------------------------
+
+ CREATE TABLE employeedetails(
+         empid VARCHAR2(5) PRIMARY KEY,
+         empname VARCHAR2(20),
+         desig VARCHAR2(20) CHECK (desig IN('Mgr','AsstMgr','VP')),
+         dept VARCHAR2(20) CHECK (dept IN('Sales','Mkt','HR')),
+         basic INTEGER check (basic>=10000 AND basic<=30000)
+         );
+
+ INSERT INTO employeedetails VALUES('E0001','Rajesh','Sales',30000);
+-- I will get error as not enough values
+INSERT INTO employeedetails(empid,desig,dept,basic) VALUES('E0001','Mgr','Sales',30000);
+-- So if we want to skip any column while inserting , then mention the column names after the 
+table name in which you want to insert data.
+INSERT INTO employeedetails(empid,desig,dept,basic) VALUES('E0001','Mgr','Sales','Hello');
+-- The above statement will give error because basic is having the datatype as integer but while
+inserting the data, we inserted a string.
+-------------------
+-- String data are case sensitive in oracle
+ INSERT INTO employeedetails VALUES('E0001','eename='rajesh';
+  -- It wont show any of the rows as we are writing r in lowercase but in the table while storing 
+  we stored R in uppercase for rajesh.  
+-------------------------------------------------------------------------------------------------
+We need to design an application for a shop. We need to store the customer details like firstname,middlename,lastname,mobilenumber,dob,city
+
+   firstname,lastname,mobilenumber,dob cannot be null. 
+   For city default value will be Delhi.
+   We need to identify customer uniquely. 
+
+We need to store the details related to the items in the store/shop. Like itemname,QOH,priceoftheitem.
+so itemname cannnot be null, Qoh should be more than 100.
+Price of the item should not be 0 or less than 0.
+
+We need to store the details of day to day sell like customerid,itemid , dateofpurchase and
+quantity purchased.
+
+     date of purchase cannot be null and quantity purchased cannot be 0 or less than 0.
+
+--------------------------------------------------------------------------------------------------------
+CREATE TABLE customer(
+   custid,
+   firstname,
+   middlename,
+   lastname,
+   mobilenumber,
+   dob
+)
+
+CREATE TABLE item(
+ itemid,
+ itemname,
+ qoh,
+ price
+)
+
+CREATE TABLE purchase(
+custid
+itemid
+dateofpur
+qp
+)
+-----------------------------------------------------------------------------------------------------
+
+CREATE TABLE employeedetails(
+         empid VARCHAR2(5) PRIMARY KEY,
+         empname VARCHAR2(20) NOT NULL,
+         desig VARCHAR2(20) CHECK (desig IN('Mgr','AsstMgr','VP')),
+         dept VARCHAR2(20) CHECK (dept IN('Sales','Mkt','HR')),
+         basic INTEGER check (basic>=10000 AND basic<=50000),
+         doj DATE
+         );
+
+
+   INSERT INTO employeedetails VALUES('E0001','Rajesh','Mgr','Sales',30000,'12-nov-2010');
+   INSERT INTO employeedetails VALUES('E0002','Raj','Mgr','Sales',29000,null);
+   INSERT INTO employeedetails VALUES('E0003','Rohit','AsstMgr','Sales',20000,'14-jul-1980');
+   INSERT INTO employeedetails VALUES('E0004','Amit','Mgr','Sales',30000,null);
+   INSERT INTO employeedetails VALUES('E0005','Mohan','Mgr','Sales',29000,null);
+   INSERT INTO employeedetails VALUES('E0006','Surender','VP','Mkt',20000,'21-mar-1999');
+
+--------------------------------------------------------------------------------------------
+Q Why we need to use where clause?
+A To restrict the number of records based on some condition
+
+Q Display all the columns for all the records.
+A SELECT * FROM employeedetails;
+
+Q Display all the columns for the designation Mgr only.
+A SELECT * FROM employeedetails WHERE desig='Mgr';
+
+Q Display all the columns for the designation Mgr from Sales department.
+A SELECT * FROM employeedetails WHERE desig='Mgr' AND dept='Sales';
+
+Q Display empid,empname for the designation Mgr from Sales department.
+A SELECT empid,empname FROM employeedetails WHERE desig='Mgr' and dept='Sales';
+[ If I use or in the above statement which means Mgr from any Dept and any designation from Sales.]
+Q Display empid,empname and desig for Mgr or AsstMgr
+A SELECT empid,empname,desig FROM employeedetails WHERE desig='Mgr' OR desig='AsstMgr';
+  OR
+ SELECT empid,empname,desig FROM employeedetails WHERE desig IN('Mgr','AsstMgr');
+ 
+Q Display empid,empname and basic where basic is equivalent 10000 or more than 10000 and equivalent to
+  20000 and less than 20000.
+A SELECT empid,empname,basic FROM employeedetails WHERE basic>=10000 AND basic<=20000;
+[ If we put OR in the above statement , than it will satisfy any value which is more than 10000 and
+  any value which is less than 20000 .Ultimately it matches all the records.]
+ OR
+  SELECT empid,empname,basic FROM employeedetails WHERE basic BETWEEN 10000 and 20000; 
+ [ Inclusive the value 10000 and 20000]
+Q SELECT empid empname and basic where basic is not between 10000 and 20000.
+A SELECT empid,empname,basic FROM employeedetails WHERE basic IS NOT BETWEEN 10000 AND 20000;
+
+Q SELECT empid,empname for those employees for whom we dont have doj.
+A SELECT empid,empname FROM employeedetails WHERE doj IS NULL;
+[ We cannot equate anything with NULL So writing SELECT empid,empname FROM employeedetails WHERE doj=NULL is incorrect]
+Q SELECT empid,empname FROM employeedetails WHERE employees are having date of joining.
+A SELECT empid,empname FROM employeedetails WHERE doj IS NOT NULL;
+
+Q SELECT empid,empname WHERE employee's name starts with R.
+A SELECT empid,empname WHERE empname LIKE 'R%';
+[ % matches 0 or more characters ]
+Q SELECT empid,empname WHERE employee's name is not starting with R.
+A SELECT empid,empname WHERE empname NOT LIKE 'R%';
+
+Q SELECT empid,empname WHERE employee's name ends with n.
+A SELECT empid,empname WHERE empname LIKE '%n';
+
+Q SELECT empid,empname WHERE employee's name starts with R followed by exactly 2 characters.
+A SELECT empid,empname WHERE empname LIKE 'R__'; -- We have 2 underscores after R
+[ _ replaces a single character at time]
+
+Q Display empid,empname,basic and HRA ( which is calculated from basic as 4% of basic).
+A SELECT empid,empname,basic,basic*0.04 HRA FROM employeedetails;
+
+Q Display empid,empname,basic,hra ( which is calculated from basic as 4% of basic) for 
+  the employees where the hra is 400
+A SELECT empid,empname,basic,basic*0.04 HRA FROM employeedetails
+  WHERE basic*0.04=400;
+
+Q Display empid,empname,basic,hra ( which is calculated from basic as 4% of basic) for 
+  the employees where the hra more than 1000.
+A SELECT empid,empname,basic,basic*0.04 HRA FROM employeedetails
+  WHERE basic*0.04>1000;
+
+Q Display empid,empname where the basic is more than 10000.
+A SELECT empid,empname FROM employeedetails WHERE basic>10000;
+
+Q Display empid for the employee whose name is Ram.
+A SELECT empid FROM employeedetails WHERE empname='Ram';
+
+To see the table structure we have a command
+DESC <tablename>
+DESC employee
+
+-----------------------------------------------------------------------------------------------------
+In CHAR , if size is more than the string stored, the extra trailing locations are filled with space.
+In VARCHAR2 if the size is more than the string stored , the extra trailing locations are not filled with space.
+So while providing the where clause for an attribute which is of type char , iff  the compared value
+is having smaller size as that of declaration we may compare the data with or without trailing space.
+-----------------------------------------------------------------------------------------------------
+CREATE TABLE employeedetails(
+         empid VARCHAR2(5) PRIMARY KEY,
+         empname VARCHAR2(20) NOT NULL,
+         desig VARCHAR2(20) CHECK (desig IN('Mgr','AsstMgr','VP')),
+         dept VARCHAR2(20) CHECK (dept IN('Sales','Mkt','HR')),
+         basic INTEGER check (basic>=10000 AND basic<=50000),
+         doj DATE
+         );
+
+
+   INSERT INTO employeedetails VALUES('E0001','Rajesh','Mgr','Sales',30000,'12-nov-2010');
+   INSERT INTO employeedetails VALUES('E0002','Raj','Mgr','Sales',29000,null);
+   INSERT INTO employeedetails VALUES('E0003','Rohit','AsstMgr','Sales',20000,'14-jul-1980');
+   INSERT INTO employeedetails VALUES('E0004','Amit','Mgr','Sales',30000,null);
+   INSERT INTO employeedetails VALUES('E0005','Mohan','Mgr','Sales',29000,null);
+   INSERT INTO employeedetails VALUES('E0006','Surender','VP','Mkt',20000,'21-mar-1999');
+
+Q For all the employees give an increment of 1000 to the basic.
+A UPDATE employeedetails SET basic=basic+1000;
+
+Q For all the managers give an increment of 50%.
+A UPDATE employeedetails SET basic=basic+basic*.5 WHERE desig='Mgr';
+
+Q For the employee E0003 change the designation from AsstMgr to Mgr and have an increment of 10000.
+A UPDATE employeedetails SET desig='Mgr',basic=basic+10000 WHERE empid='E0003'; 
+
+
+UPDATE employeedetails SET desig='Manager',basic=basic+10000 WHERE empid='E0003'; 
+[ If we have check constraint or other constraints with the table than that constraint is being 
+  considered during the updation. If the updated value is not following the constraint, record
+  won't be updated due to the constraint not being followed.]
+
+UPDATE employeedetails SET doj=NULL WHERE empid='E0006';
+
+here = is not used for comparison, it is used for assignment.So = can be used with NULL.
+
+SELECT * FROM employeedetails
+WHERE doj=NULL
+
+In the above command we are using = for comparison. Null cannot be compared with Null with =.
+For that we have to use IS NULL
+
+SELECT * FROM employeedetails
+WHERE doj IS NULL;
+
+------------------------------------------------------------------------------------------------------
+
+CREATE TABLE employeedetails(
+         empid VARCHAR2(5) PRIMARY KEY,
+         empname VARCHAR2(20) NOT NULL,
+         desig VARCHAR2(20) CHECK (desig IN('Mgr','AsstMgr','VP')),
+         dept VARCHAR2(20) CHECK (dept IN('Sales','Mkt','HR')),
+         basic INTEGER check (basic>=10000 AND basic<=50000),
+         doj DATE
+         );
+
+
+   INSERT INTO employeedetails VALUES('E0001','Rajesh','Mgr','Sales',30000,'12-nov-2010');
+   INSERT INTO employeedetails VALUES('E0002','Raj','Mgr','Sales',29000,null);
+   INSERT INTO employeedetails VALUES('E0003','Rohit','AsstMgr','Sales',20000,'14-jul-1980');
+   INSERT INTO employeedetails VALUES('E0004','Amit','Mgr','Sales',30000,null);
+   INSERT INTO employeedetails VALUES('E0005','Mohan','Mgr','Sales',29000,null);
+   INSERT INTO employeedetails VALUES('E0006','Surender','VP','Mkt',20000,'21-mar-1999');
+
+Q Delete the employee details for the employee whose id is E0001. 
+DELETE FROM employeedetails WHERE empid='E0001';
+
+Q Delete the employee details for the employee whose designation is VP.
+DELETE FROM employeedetails WHERE desig='VP';
+
+Q Delete all the records from employeedetails.
+DELETE FROM employeedetails;
+-----------------------------------------------------------------------------------------------------
+CREATE TABLE employeedetails(
+         empid VARCHAR2(5) PRIMARY KEY,
+         empname VARCHAR2(20) NOT NULL,
+         desig VARCHAR2(20) CHECK (desig IN('Mgr','AsstMgr','VP')),
+         dept VARCHAR2(20) CHECK (dept IN('Sales','Mkt','HR')),
+         basic INTEGER check (basic>=10000 AND basic<=50000),
+         doj DATE
+         );
+
+
+   INSERT INTO employeedetails VALUES('E0001','Rajesh','Mgr','Sales',30000,'12-nov-2010');
+   INSERT INTO employeedetails VALUES('E0002','Raj','Mgr','Sales',29000,null);
+   INSERT INTO employeedetails VALUES('E0003','Rohit','AsstMgr','Sales',20000,'14-jul-1980');
+   INSERT INTO employeedetails VALUES('E0004','Amit','Mgr','Sales',30000,null);
+   INSERT INTO employeedetails VALUES('E0005','Mohan','Mgr','Sales',29000,null);
+   INSERT INTO employeedetails VALUES('E0006','Surender','VP','Mkt',20000,'21-mar-1999');
+
+---------------------------------------------------------
+Example of single row function
+       SELECT upper(empname) FROM employeedetails;
+       SELECT empid,upper(empname) NAME,desig,dept,basic FROM employeedetails;
+
+Example of multiple rows function
+      SELECT count(empid) FROM employeedetails; 
+
+SELECT City, LENGTH(City) "LENGTH",  LOWER(City) "LOWERCASE", UPPER(City) "UPPERCASE" FROM Weather
+WHERE LENGTH(city)=6;
+---------------------------------------------------------------------------------------
+SELECT City, Country, CONCAT(City, Country) "CONCAT", City || Country "ConcatByOperator", CONCAT(CONCAT(City, ', '), Country) "NestedConcat" FROM Weather;
+----------------------------------------------------------------------
+SELECT City, Country, CONCAT(City, Country) "CONCAT" FROM Weather;
+---------------------------------------------------------------
+SELECT City, Country, City || Country "ConcatByOperator" FROM Weather;
+--------------------------------------------------------------------
+SELECT City, Country, CONCAT(CONCAT(City, ', '), Country) "NestedConcat" FROM Weather;
+                                London,
+                                London,UK
+------------------------------------------------------------------------------
+Aggregate functions
+
+1) COUNT
+2) SUM
+3) MIN
+4) MAX
+5) AVG
+
+
+
+SELECT TO_CHAR(1210.73, '9999.9') FROM DUAL
+Result: ' 1210.7'
+
+SELECT TO_CHAR(-1210.73, '9999.9') FROM DUAL
+Result: '-1210.7'
+
+SELECT TO_CHAR(1210.73, '9,999.99') FROM DUAL
+Result: ' 1,210.73'
+
+SELECT TO_CHAR(1210.73, '$9,999.00') FROM DUAL
+Result: ' $1,210.73'
+
+SELECT TO_CHAR(21, '000099') FROM DUAL
+Result: ' 000021'
+
+-------------------------------------------------------------------------------------------------
+YEAR	Year, spelled out
+YYYY	4-digit year
+YYY
+YY
+Y	Last 3, 2, or 1 digit(s) of year.
+
+
+Q	Quarter of year (1, 2, 3, 4; JAN-MAR = 1).
+MM	Month (01-12; JAN = 01).
+MON	Abbreviated name of month.
+MONTH	Name of month, padded with blanks to length of 9 characters.
+RM	Roman numeral month (I-XII; JAN = I).
+WW	Week of year (1-53) where week 1 starts on the first day of the year and continues to the seventh day of the year.
+W	Week of month (1-5) where week 1 starts on the first day of the month and ends on the seventh.
+
+D	Day of week (1-7).
+DAY	Name of day.
+DD	Day of month (1-31).
+DDD	Day of year (1-366).
+DY	Abbreviated name of day.
+
+HH	Hour of day (1-12).
+HH12	Hour of day (1-12).
+HH24	Hour of day (0-23).
+MI	Minute (0-59).
+SS	Second (0-59).
+
+The following are date examples for the TO_CHAR function.
+
+SELECT TO_CHAR(sysdate, 'yyyy/mm/dd') FROM dual;
+Result: '2003/07/09'
+
+SELECT TO_CHAR(sysdate, 'yyyy-mm-dd') FROM dual;
+Result: '2003-07-09'
+
+SELECT TO_CHAR(sysdate, 'Month DD, YYYY') FROM dual;
+Result: 'July 09, 2003'
+
+
+SELECT TO_CHAR(sysdate, 'MON DDth, YYYY') FROM dual;
+Result: 'JUL 09TH, 2003'
+
+select ename,to_char(doj,'MONTH-dd-yyyy') date_of_joining from employee
+
+You will notice that in some TO_CHAR function examples, the format_mask parameter begins with "FM". This means that zeros and blanks are suppressed. This can be seen in the examples below.
+
+TO_CHAR(sysdate, 'FMMonth DD, YYYY')
+Result: 'July 9, 2003'
+
+TO_CHAR(sysdate, 'FMMON DDth, YYYY')
+Result: 'JUL 9TH, 2003'
+
+TO_CHAR(sysdate, 'FMMon ddth, YYYY')
+Result: 'Jul 9th, 2003'
+
+----------------------------------
+  dd-MON-yy
+  INSERT INTO employeedetails VALUES('E0001','Ram','12-jan-2020','mgr','sales',12000);
+  INSERT INTO employeedetails VALUES('E0002','Shayam',TO_DATE('2020/01/12','yyyy/mm/dd'),'mgr','sales',15000);
+  INSERT INTO employeedetails VALUES('E0003','Shayam',TO_DATE('20200112','yyyymmdd'),'mgr','sales',15000);
+
+SELECT TO_DATE('2003/07/09', 'yyyy/mm/dd') FROM dual;
+Result: date value of July 9, 2003
+
+SELECT TO_DATE('07092003', 'MMDDYYYY') FROM dual;
+Result: date value of July 9, 2003
+
+SELECT TO_DATE('20020315', 'yyyymmdd') FROM dual;
+Result: date value of Mar 15, 2002
+You could use the TO_DATE function with the dual table as follows:
+
+SELECT TO_DATE('2015/05/15 8:30:25', 'YYYY/MM/DD HH:MI:SS')
+FROM dual;
+--------------------------------------------------------------------------------------------
+SELECT TO_NUMBER('1210.73', '9999.99') FROM dual
+Result: 1210.73
+
+SELECT TO_NUMBER('546', '999') FROM dual
+Result: 546
+
+SELECT TO_NUMBER('23', '99') FROM dual
+Result: 23
+-------------------------------------------------------------------------------------
+
+
+Description
+The Oracle/PLSQL CEIL function returns the smallest integer value that is greater than or equal to a number.
+
+CEIL(32.65)
+Result: 33
+
+CEIL(32.1)
+Result: 33
+
+CEIL(32)
+Result: 32
+
+CEIL(-32.65)
+Result: -32
+
+CEIL(-32)
+Result: -32
+
+-------------------------------------------------------------------
+Description
+The Oracle/PLSQL FLOOR function returns the largest integer value that is equal to or less than a number.
+
+FLOOR(5.9)
+Result: 5
+
+FLOOR(34.29)
+Result: 34
+
+FLOOR(-5.9)
+Result: -6
+-------------------------------------
+
+Create a table where default value for the customer's city is Delhi.
+
+
+  CREATE table customer(
+    customerid VARCHAR2(5) PRIMARY KEY,
+    name VARCHAR2(20) NOT NULL,
+    city VARCHAR2(20) default 'Delhi'
+  );
+
+  INSERT INTO customer(customerid,name) VALUES('C0001','Raju');
+  INSERT INTO customer(customerid,name,city) VALUES('C0002','Raju','Chennai');
+  INSERT INTO customer VALUES('C0003','Raju','Bangalore');
+--------------------------------------------------------------------------------------------------
+  
+  UPDATE customer SET city='Hyderabad' WHERE customerid='C0001';
+--------------------------------------------------------------------------------------------------- 
+  
+
+
